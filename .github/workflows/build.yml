@@ -1,0 +1,149 @@
+name: Build AzerothCore container images
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  schedule:
+    # Rebuild at 00:00 every Sunday to pick up updates
+    - cron: '0 0 * * 0'
+  workflow_dispatch: {}
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  build-images:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout AzerothCore
+        uses: actions/checkout@v4
+        with:
+          repository: mod-playerbots/azerothcore-wotlk
+          ref: Playerbot
+          path: azerothcore-wotlk
+
+      - name: Clone Modules
+        run: |
+          cd azerothcore-wotlk/modules
+          git clone https://github.com/mod-playerbots/mod-playerbots.git
+          git clone https://github.com/azerothcore/mod-autobalance.git
+          git clone https://github.com/azerothcore/mod-solo-lfg.git
+          git clone https://github.com/azerothcore/mod-gain-honor-guard.git
+          git clone https://github.com/NathanHandley/mod-ah-bot.git
+          git clone https://github.com/pangolp/mod-quest-loot-party.git
+          git clone https://github.com/ZhengPeiRu21/mod-individual-progression.git
+
+      - name: Log in to GHCR
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set image tags
+        id: tags
+        run: |
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            echo "tags=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tags=latest ${{ github.sha }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - parallel:
+          - name: Build ac-db-import image
+            id: build-ac-db-import
+            uses: redhat-actions/buildah-build@v3
+            with:
+              image: ac-wotlk-db-import
+              tags: ${{ steps.tags.outputs.tags }}
+              containerfiles: |
+                azerothcore-wotlk/apps/docker/Dockerfile
+              context: azerothcore-wotlk
+              build-args: |
+                USER_ID=1000
+                GROUP_ID=1000
+                DOCKER_USER=acore
+              extra-args: |
+                --target=db-import
+
+          - name: Build ac-worldserver image
+            id: build-ac-worldserver
+            uses: redhat-actions/buildah-build@v3
+            with:
+              image: ac-wotlk-worldserver
+              tags: ${{ steps.tags.outputs.tags }}
+              containerfiles: |
+                azerothcore-wotlk/apps/docker/Dockerfile
+              context: azerothcore-wotlk
+              build-args: |
+                USER_ID=1000
+                GROUP_ID=1000
+                DOCKER_USER=acore
+              extra-args: |
+                --target=worldserver
+
+          - name: Build ac-authserver image
+            id: build-ac-authserver
+            uses: redhat-actions/buildah-build@v3
+            with:
+              image: ac-wotlk-authserver
+              tags: ${{ steps.tags.outputs.tags }}
+              containerfiles: |
+                azerothcore-wotlk/apps/docker/Dockerfile
+              context: azerothcore-wotlk
+              build-args: |
+                USER_ID=1000
+                GROUP_ID=1000
+                DOCKER_USER=acore
+              extra-args: |
+                --target=authserver
+
+          - name: Build ac-client-data-init image
+            id: build-ac-client-data-init
+            uses: redhat-actions/buildah-build@v3
+            with:
+              image: ac-wotlk-client-data
+              tags: ${{ steps.tags.outputs.tags }}
+              containerfiles: |
+                azerothcore-wotlk/apps/docker/Dockerfile
+              context: azerothcore-wotlk
+              build-args: |
+                USER_ID=1000
+                GROUP_ID=1000
+                DOCKER_USER=acore
+              extra-args: |
+                --target=client-data
+
+      - parallel:
+          - name: Push ac-db-import to GHCR
+            uses: redhat-actions/push-to-registry@v3
+            with:
+              image: ${{ steps.build-ac-db-import.outputs.image }}
+              tags: ${{ steps.build-ac-db-import.outputs.tags }}
+              registry: ${{ env.REGISTRY }}/${{ github.repository_owner }}
+
+          - name: Push ac-worldserver to GHCR
+            uses: redhat-actions/push-to-registry@v3
+            with:
+              image: ${{ steps.build-ac-worldserver.outputs.image }}
+              tags: ${{ steps.build-ac-worldserver.outputs.tags }}
+              registry: ${{ env.REGISTRY }}/${{ github.repository_owner }}
+
+          - name: Push ac-authserver to GHCR
+            uses: redhat-actions/push-to-registry@v3
+            with:
+              image: ${{ steps.build-ac-authserver.outputs.image }}
+              tags: ${{ steps.build-ac-authserver.outputs.tags }}
+              registry: ${{ env.REGISTRY }}/${{ github.repository_owner }}
+
+          - name: Push ac-client-data-init to GHCR
+            uses: redhat-actions/push-to-registry@v3
+            with:
+              image: ${{ steps.build-ac-client-data-init.outputs.image }}
+              tags: ${{ steps.build-ac-client-data-init.outputs.tags }}
+              registry: ${{ env.REGISTRY }}/${{ github.repository_owner }}
