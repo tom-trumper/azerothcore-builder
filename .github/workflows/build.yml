@@ -37,6 +37,13 @@ jobs:
           git clone https://github.com/NathanHandley/mod-ah-bot.git
           git clone https://github.com/pangolp/mod-quest-loot-party.git
           git clone https://github.com/ZhengPeiRu21/mod-individual-progression.git
+      
+      - name: Stage SQL files
+        run: |
+          cd azerothcore-wotlk
+          cp modules/mod-individual-progression/optional/sql/world/*.sql modules/mod-individual-progression/data/sql/world/base/
+          rm modules/mod-individual-progression/data/sql/world/base/zz_optional_vanilla_models.sql
+          rm modules/mod-individual-progression/data/sql/world/base/zz_optional_vanilla_transports.sql
 
       - name: Log in to GHCR
         uses: redhat-actions/podman-login@v1
