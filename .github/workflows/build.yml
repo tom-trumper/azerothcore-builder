@@ -162,6 +162,9 @@ jobs:
               tags: ${{ steps.build-ac-client-data-init.outputs.tags }}
               registry: ${{ env.REGISTRY }}/${{ github.repository_owner }}
 
+      - name: Checkout azerothcore-builder
+        uses: actions/checkout@v4
+
       - name: Build ac-client-data-ind-prog image
         id: build-ac-client-data-ind-prog
         uses: redhat-actions/buildah-build@v3
@@ -169,7 +172,8 @@ jobs:
           image: ac-wotlk-client-data-ind-prog
           tags: ${{ steps.tags.outputs.tags }}
           containerfiles: |
-            Containerfile
+            azerothcore-builder/Containerfile
+          context: azerothcore-builder
 
       - name: Push ac-client-data-ind-prog to GHCR
         uses: redhat-actions/push-to-registry@v3
