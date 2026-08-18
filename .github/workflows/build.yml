@@ -45,6 +45,13 @@ jobs:
           rm modules/mod-individual-progression/data/sql/world/base/zz_optional_vanilla_models.sql
           rm modules/mod-individual-progression/data/sql/world/base/zz_optional_vanilla_transports.sql
 
+      - name: Install 7zip and extract individual progression archives
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y p7zip-full
+          7z x azerothcore-wotlk/modules/mod-individual-progression/optional/dbc.7z -o/tmp
+          7z x azerothcore-wotlk/modules/mod-individual-progression/optional/patch-S.7z -o/tmp
+
       - name: Log in to GHCR
         uses: redhat-actions/podman-login@v1
         with:
@@ -154,3 +161,19 @@ jobs:
               image: ${{ steps.build-ac-client-data-init.outputs.image }}
               tags: ${{ steps.build-ac-client-data-init.outputs.tags }}
               registry: ${{ env.REGISTRY }}/${{ github.repository_owner }}
+
+      - name: Build ac-client-data-ind-prog image
+        id: build-ac-client-data-ind-prog
+        uses: redhat-actions/buildah-build@v3
+        with:
+          image: ac-wotlk-client-data-ind-prog
+          tags: ${{ steps.tags.outputs.tags }}
+          containerfiles: |
+            Containerfile
+
+      - name: Push ac-client-data-ind-prog to GHCR
+        uses: redhat-actions/push-to-registry@v3
+        with:
+          image: ${{ steps.build-ac-client-data-ind-prog.outputs.image }}
+          tags: ${{ steps.build-ac-client-data-ind-prog.outputs.tags }}
+          registry: ${{ env.REGISTRY }}/${{ github.repository_owner }}
