@@ -30,11 +30,6 @@ jobs:
           ref: Playerbot
           path: azerothcore-wotlk
 
-      - name: DEBUG
-        run: |
-          pwd
-          ls -lR .
-
       - name: Clone Modules
         run: |
           cd azerothcore-wotlk/modules
