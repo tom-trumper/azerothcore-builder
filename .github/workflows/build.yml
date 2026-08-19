@@ -32,7 +32,8 @@ jobs:
 
       - name: DEBUG
         run: |
-          ls -l .
+          pwd
+          ls -lR .
 
       - name: Clone Modules
         run: |
@@ -174,8 +175,7 @@ jobs:
           image: ac-wotlk-client-data-ind-prog
           tags: ${{ steps.tags.outputs.tags }}
           containerfiles: |
-            azerothcore-builder/Containerfile
-          context: azerothcore-builder
+            Containerfile
 
       - name: Push ac-client-data-ind-prog to GHCR
         uses: redhat-actions/push-to-registry@v3
