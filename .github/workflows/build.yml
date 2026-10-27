@@ -26,8 +26,7 @@ jobs:
       - name: Checkout AzerothCore
         uses: actions/checkout@v4
         with:
-          repository: mod-playerbots/azerothcore-wotlk
-          ref: Playerbot
+          repository: Grimfeather/azerothcore-wotlk
           path: azerothcore-wotlk
 
       - name: Clone Modules
@@ -39,7 +38,7 @@ jobs:
           git clone https://github.com/azerothcore/mod-gain-honor-guard.git
           git clone https://github.com/NathanHandley/mod-ah-bot.git
           git clone https://github.com/pangolp/mod-quest-loot-party.git
-          git clone https://github.com/ZhengPeiRu21/mod-individual-progression.git
+          git clone https://github.com/Grimfeather/mod-individual-progression.git
       
       - name: Stage SQL files
         run: |
