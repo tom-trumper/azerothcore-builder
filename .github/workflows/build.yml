@@ -168,8 +168,9 @@ jobs:
         with:
           image: ac-wotlk-client-data-ind-prog
           tags: ${{ steps.tags.outputs.tags }}
+          context: azerothcore-wotlk
           containerfiles: |
-            Containerfile
+            /home/runner/work/azerothcore-builder/azerothcore-builder/Containerfile
           extra-args: |
               --target=client-data-ind-prog
       
@@ -179,8 +180,9 @@ jobs:
         with:
           image: ac-wotlk-worldserver-playerbots
           tags: ${{ steps.tags.outputs.tags }}
+          context: azerothcore-wotlk
           containerfiles: |
-            Containerfile
+            /home/runner/work/azerothcore-builder/azerothcore-builder/Containerfile
           extra-args: |
               --target=worldserver-playerbots
 
