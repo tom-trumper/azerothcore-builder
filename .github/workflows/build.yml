@@ -168,11 +168,10 @@ jobs:
         with:
           image: ac-wotlk-client-data-ind-prog
           tags: ${{ steps.tags.outputs.tags }}
-          context: azerothcore-wotlk
           containerfiles: |
-            /home/runner/work/azerothcore-builder/azerothcore-builder/Containerfile
+            Containerfile
           extra-args: |
-              --target=client-data-ind-prog
+            --target=client-data-ind-prog
       
       - name: Build ac-worldserver-playerbots image
         id: build-ac-worldserver-playerbots
@@ -184,7 +183,7 @@ jobs:
           containerfiles: |
             /home/runner/work/azerothcore-builder/azerothcore-builder/Containerfile
           extra-args: |
-              --target=worldserver-playerbots
+            --target=worldserver-playerbots
 
       - name: Push ac-client-data-ind-prog to GHCR
         uses: redhat-actions/push-to-registry@v3
