@@ -182,6 +182,10 @@ jobs:
           context: azerothcore-wotlk
           containerfiles: |
             /home/runner/work/azerothcore-builder/azerothcore-builder/Containerfile
+          build-args: |
+            USER_ID=1000
+            GROUP_ID=1000
+            DOCKER_USER=acore
           extra-args: |
             --target=worldserver-playerbots
 
