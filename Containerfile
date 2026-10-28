@@ -7,4 +7,4 @@ CMD ["bash",  "-c", "source /azerothcore/apps/installer/includes/functions.sh &&
 FROM ghcr.io/tom-trumper/ac-wotlk-worldserver AS worldserver-playerbots
 
 COPY --chown=$DOCKER_USER:$DOCKER_USER \
-    modules/mod-individual-progression/data/sql/world/base modules/mod-individual-progression/data/sql/world/base
+    modules/mod-playerbots/data/sql modules/mod-playerbots/data/sql
