@@ -170,10 +170,30 @@ jobs:
           tags: ${{ steps.tags.outputs.tags }}
           containerfiles: |
             Containerfile
+          extra-args: |
+              --target=client-data-ind-prog
+      
+      - name: Build ac-worldserver-playerbots image
+        id: build-ac-worldserver-playerbots
+        uses: redhat-actions/buildah-build@v3
+        with:
+          image: ac-wotlk-worldserver-playerbots
+          tags: ${{ steps.tags.outputs.tags }}
+          containerfiles: |
+            Containerfile
+          extra-args: |
+              --target=worldserver-playerbots
 
       - name: Push ac-client-data-ind-prog to GHCR
         uses: redhat-actions/push-to-registry@v3
         with:
           image: ${{ steps.build-ac-client-data-ind-prog.outputs.image }}
           tags: ${{ steps.build-ac-client-data-ind-prog.outputs.tags }}
+          registry: ${{ env.REGISTRY }}/${{ github.repository_owner }}
+
+      - name: Push ac-worldserver-playerbots to GHCR
+        uses: redhat-actions/push-to-registry@v3
+        with:
+          image: ${{ steps.build-ac-worldserver-playerbots.outputs.image }}
+          tags: ${{ steps.build-ac-worldserver-playerbots.outputs.tags }}
           registry: ${{ env.REGISTRY }}/${{ github.repository_owner }}
