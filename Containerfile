@@ -6,5 +6,7 @@ CMD ["bash",  "-c", "source /azerothcore/apps/installer/includes/functions.sh &&
 
 FROM ghcr.io/tom-trumper/ac-wotlk-worldserver AS worldserver-playerbots
 
+COPY entrypoint.sh /azerothcore/entrypoint.sh
+
 COPY --chown=$DOCKER_USER:$DOCKER_USER \
     modules/mod-playerbots/data/sql modules/mod-playerbots/data/sql

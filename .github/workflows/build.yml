@@ -51,6 +51,10 @@ jobs:
         run: |
           7z x azerothcore-wotlk/modules/mod-individual-progression/optional/dbc.7z -o.
           7z x azerothcore-wotlk/modules/mod-individual-progression/optional/patch-S.7z -o.
+      
+      - name: Stage patched entrypoint.sh
+        run: |
+          cp azerothcore-builder/entrypoint.sh azerothcore-wotlk/
 
       - name: Log in to GHCR
         uses: redhat-actions/podman-login@v1
