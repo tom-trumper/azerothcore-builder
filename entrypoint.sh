@@ -50,7 +50,7 @@ else
 fi
 
 # Copy modules "dist" files to "conf"
-for MODULE_CONF in "$CONF_DIR/modules/*.conf.dist"; do cp -nv "$MODULE_CONF" "${MODULE_CONF%.dist}"; done
+for MODULE_CONF in $CONF_DIR/modules/*.conf.dist; do cp -nv "$MODULE_CONF" "${MODULE_CONF%.dist}"; done
 
 echo "Starting $ACORE_COMPONENT..."
 
